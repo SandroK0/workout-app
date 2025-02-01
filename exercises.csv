@@ -1,0 +1,22 @@
+exercise_id,name,description,instructions,target_muscles,difficulty
+1,Push-up,Basic upper body exercise,1. Start in a plank position. 2. Lower your body towards the ground. 3. Push back up to the starting position.,"Chest, Shoulders, Triceps",2
+2,Squat,Fundamental lower body exercise,1. Stand with feet shoulder-width apart. 2. Lower your body by bending your knees and hips. 3. Return to the starting position.,"Quadriceps, Hamstrings, Glutes",2
+3,Bench Press,Upper body strength exercise,1. Lie on a flat bench with a barbell above your chest. 2. Lower the barbell to your chest. 3. Press the barbell back up to the starting position.,"Chest, Shoulders, Triceps",3
+4,Flies,Chest isolation exercise,1. Lie on a flat bench with a dumbbell in each hand. 2. Lower the dumbbells out to the sides. 3. Bring the dumbbells back to the starting position.,Chest,2
+5,Lat Pulldowns,Upper back exercise,1. Sit at a lat pulldown machine with a wide grip on the bar. 2. Pull the bar down towards your chest. 3. Return the bar to the starting position.,"Latissimus Dorsi, Biceps",2
+6,Plank,Core stabilization exercise,"1. Start in a plank position with elbows on the ground. 2. Hold the position, keeping your body straight.","Abdominals, Shoulders, Back",1
+7,Lunges,Leg strengthening exercise,"1. Stand with feet together. 2. Take a step forward with one leg, lowering your body until both knees are bent. 3. Return to the starting position.","Quadriceps, Hamstrings, Glutes",2
+8,Deadlift,Full body strength exercise,"1. Stand with feet hip-width apart, barbell in front. 2. Bend at the hips and knees to lower the barbell. 3. Stand back up, lifting the barbell.","Hamstrings, Glutes, Lower Back",3
+9,Leg Press,Lower body strength exercise,1. Sit on a leg press machine with feet on the platform. 2. Push the platform away by extending your knees. 3. Bend your knees to bring the platform back towards you.,"Quadriceps, Hamstrings, Glutes",2
+10,Pull-up,Upper body pulling exercise,1. Hang from a bar with palms facing away. 2. Pull your body up until your chin is above the bar. 3. Lower back down to the starting position.,"Back, Biceps",3
+11,Bicycle Crunch,Abdominal exercise,1. Lie on your back with hands behind your head. 2. Bring one knee towards your chest while twisting your torso to bring the opposite elbow towards that knee. 3. Repeat on the other side.,"Abdominals, Obliques",2
+12,Overhead Press,Shoulder strength exercise,"1. Stand with feet shoulder-width apart, barbell at shoulder height. 2. Press the barbell overhead. 3. Lower the barbell back to shoulder height.","Shoulders, Triceps",2
+13,Hammer Curls,Bicep isolation exercise,1. Hold a dumbbell in each hand with palms facing in. 2. Curl the dumbbells towards your shoulders. 3. Lower the dumbbells back down.,"Biceps, Brachialis",2
+14,Tricep Dips,Tricep isolation exercise,1. Sit on the edge of a bench or chair with hands next to hips. 2. Lower your body by bending your elbows. 3. Push back up to the starting position.,Triceps,2
+15,Leg Curl,Hamstring isolation exercise,1. Lie face down on a leg curl machine. 2. Curl your legs towards your buttocks. 3. Extend your legs back to the starting position.,Hamstrings,2
+16,Russian Twist,Oblique exercise,"1. Sit on the ground with knees bent, lean back slightly. 2. Twist your torso to one side, then the other, holding a weight if desired. 3. Repeat.",Obliques,2
+17,Calf Raises,Calf muscle exercise,1. Stand on a raised surface with heels hanging off the edge. 2. Raise your heels by contracting the calf muscles. 3. Lower your heels back down.,Calves,1
+18,Reverse Crunch,Lower abdominal exercise,1. Lie on your back with legs raised and bent at 90 degrees. 2. Curl your hips off the ground towards your chest. 3. Lower your hips back down.,Lower Abdominals,2
+19,Side Plank,Oblique and core exercise,1. Lie on your side with elbow directly beneath your shoulder. 2. Lift your hips until your body forms a straight line. 3. Hold the position and then switch sides.,"Obliques, Abdominals",2
+20,Mountain Climbers,Full body exercise,"1. Start in a plank position. 2. Bring one knee towards your chest, then switch legs quickly. 3. Repeat in a fast, running motion.","Abdominals, Shoulders, Legs",2
+21,Box Jumps,Plyometric exercise,"1. Stand in front of a sturdy box. 2. Jump onto the box, landing with knees slightly bent. 3. Step back down and repeat.","Quadriceps, Hamstrings, Calves",3

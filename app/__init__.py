@@ -1,33 +1,42 @@
 from flask import Flask
+from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from dotenv import load_dotenv
 from flask_migrate import Migrate
 import os
 
-# Initialize the extensions
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
+
+api = Api(version='1.0', title='Workout App API',
+          description='API for the Workout App')
 
 
 def create_app():
     app = Flask(__name__)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///workout.db'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = os.getenv(
-        'JWT_SECRET_KEY', 'default_secret_key')  # Default secret key for dev
+    load_dotenv()
 
-    # Initialize extensions with app
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+        'DATABASE_URL', 'sqlite:///workout.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+
+    if not app.config['JWT_SECRET_KEY']:
+        raise ValueError("JWT_SECRET_KEY is not set in the environment!")
+
     db.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": "*"}})  # Adjust for production
 
-    @app.route("/")
-    def index():
-        return "This is the Python backend server for DockFlow (using SQLite)."
+    api.init_app(app)
+
+    from .routes.user import user_ns
+    api.add_namespace(user_ns, path='/api/users')
 
     return app

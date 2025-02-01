@@ -3,10 +3,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(50), unique=True)
-    name = db.Column(db.String(50))
+    username = db.Column(db.String(50))
     password = db.Column(db.String(90))
 
     def set_password(self, password):
@@ -21,7 +22,7 @@ class TokenBlacklist(db.Model):
     token_id = db.Column(db.String(255), unique=True, nullable=False)
     user_id = db.Column(db.String(50), nullable=False)
     blacklisted_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow(), nullable=False)
+        db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 class Exercises(db.Model):
