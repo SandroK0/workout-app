@@ -5,7 +5,7 @@ from datetime import timedelta
 from app import db
 from app.models import User
 
-user_ns = Namespace('users', description='User related operations')
+user_ns = Namespace('user', description='User')
 
 user_model = user_ns.model('User', {
     'id': fields.Integer(readOnly=True, description='The user unique identifier'),
@@ -84,7 +84,7 @@ class Login(Resource):
             return {"error": "Invalid credentials", "message": "Invalid username or password."}, 401
 
         access_token = create_access_token(
-            identity=user.id, expires_delta=timedelta(days=1))
+            identity=str(user.id), expires_delta=timedelta(days=1))
 
         return {
             "message": "Login successful",

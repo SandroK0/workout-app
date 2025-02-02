@@ -11,8 +11,22 @@ db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
 
-api = Api(version='1.0', title='Workout App API',
-          description='API for the Workout App')
+
+authorizations = {
+    'BearerAuth': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
+
+api = Api(
+    version='1.0',
+    title='Workout App API',
+    description='API for the Workout App',
+    authorizations=authorizations,
+    security='BearerAuth'  # Apply globally
+)
 
 
 def create_app():
@@ -37,6 +51,8 @@ def create_app():
     api.init_app(app)
 
     from .routes.user import user_ns
-    api.add_namespace(user_ns, path='/api/users')
+    from .routes.exercises import exercises_ns
+    api.add_namespace(user_ns, path='/api/user')
+    api.add_namespace(exercises_ns, path='/api/exercises')
 
     return app
