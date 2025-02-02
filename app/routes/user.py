@@ -23,8 +23,6 @@ login_model = user_ns.model('Login', {
 })
 
 
-
-
 @user_ns.route('/register')
 class Register(Resource):
     @user_ns.expect(register_model)
