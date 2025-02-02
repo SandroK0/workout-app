@@ -7,7 +7,6 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
 
-
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -26,21 +25,26 @@ class User(db.Model):
         current_user_id = get_jwt_identity()
         return User.query.get(int(current_user_id))
 
+
 class UserProfile(db.Model):
     __tablename__ = 'user_profiles'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False, index=True)
     current_weight = db.Column(db.Float)
     target_weight = db.Column(db.Float)
     height = db.Column(db.Float)
     age = db.Column(db.Integer)
     body_fat_percentage = db.Column(db.Float)
     muscle_mass = db.Column(db.Float)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    user = db.relationship('User', backref=db.backref('profile', uselist=False, cascade='all, delete-orphan'))
+    user = db.relationship('User', backref=db.backref(
+        'profile', uselist=False, cascade='all, delete-orphan'))
 
     def to_dict(self):
         return {
@@ -54,6 +58,7 @@ class UserProfile(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
+
 
 class Exercises(db.Model):
     __tablename__ = 'exercises'
@@ -75,73 +80,142 @@ class Exercises(db.Model):
             'difficulty': self.difficulty
         }
 
+
 class WorkoutPlan(db.Model):
     __tablename__ = 'workout_plans'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False, index=True)
     name = db.Column(db.String(255), nullable=False)
     frequency = db.Column(db.String(50))
     session_duration = db.Column(db.Integer)
 
-    user = db.relationship('User', backref=db.backref('workout_plans', cascade='all, delete-orphan'))
-    selected_exercises = db.relationship('SelectedExercise', backref='workout_plan', cascade='all, delete-orphan')
-    workout_goal = db.relationship('WorkoutGoal', backref='workout_plan', cascade='all, delete-orphan', uselist=False)
+    user = db.relationship('User', backref=db.backref(
+        'workout_plans', cascade='all, delete-orphan'))
+    selected_exercises = db.relationship(
+        'SelectedExercise', backref='workout_plan', cascade='all, delete-orphan')
+    workout_goal = db.relationship(
+        'WorkoutGoal', backref='workout_plan', cascade='all, delete-orphan', uselist=False)
+
+    def to_summary(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'frequency': self.frequency,
+            'session_duration': self.session_duration,
+        }
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'frequency': self.frequency,
+            'session_duration': self.session_duration,
+            'selected_exercises': [se.to_dict() for se in self.selected_exercises],
+            'workout_goal': self.workout_goal.to_dict() if self.workout_goal else None
+        }
+
 
 class SelectedExercise(db.Model):
     __tablename__ = 'selected_exercises'
 
     id = db.Column(db.Integer, primary_key=True)
-    workout_plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id', ondelete='CASCADE'), nullable=False, index=True)
+    workout_plan_id = db.Column(db.Integer, db.ForeignKey(
+        'workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
+    exercise_id = db.Column(db.Integer, db.ForeignKey(
+        'exercises.id', ondelete='CASCADE'), nullable=False, index=True)
     sets = db.Column(db.Integer)
     reps = db.Column(db.Integer)
     duration = db.Column(db.String(100))
     distance = db.Column(db.String(100))
 
-    exercise = db.relationship('Exercises', backref=db.backref('selections', cascade='all, delete-orphan'))
+    exercise = db.relationship('Exercises', backref=db.backref(
+        'selections', cascade='all, delete-orphan'))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'exercise_id': self.exercise_id,
+            'exercise_name': self.exercise.name if self.exercise else None,
+            'sets': self.sets,
+            'reps': self.reps,
+            'duration': self.duration,
+            'distance': self.distance,
+            'goals': [g.to_dict() for g in self.goals]
+        }
+
 
 class WorkoutGoal(db.Model):
     __tablename__ = 'workout_goals'
 
     id = db.Column(db.Integer, primary_key=True)
-    workout_plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
+    workout_plan_id = db.Column(db.Integer, db.ForeignKey(
+        'workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
     target_weight = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'target_weight': self.target_weight
+        }
+
 
 class ExerciseGoal(db.Model):
     __tablename__ = 'exercise_goals'
 
     id = db.Column(db.Integer, primary_key=True)
-    selected_exercise_id = db.Column(db.Integer, db.ForeignKey('selected_exercises.id', ondelete='CASCADE'), nullable=False, index=True)
+    selected_exercise_id = db.Column(db.Integer, db.ForeignKey(
+        'selected_exercises.id', ondelete='CASCADE'), nullable=False, index=True)
     target_sets = db.Column(db.Integer, nullable=False)
     target_reps = db.Column(db.Integer, nullable=False)
     target_duration = db.Column(db.String(50))
     target_distance = db.Column(db.String(50))
 
-    selected_exercise = db.relationship('SelectedExercise', backref=db.backref('goals', cascade='all, delete-orphan'))
+    selected_exercise = db.relationship(
+        'SelectedExercise', backref=db.backref('goals', cascade='all, delete-orphan'))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'target_sets': self.target_sets,
+            'target_reps': self.target_reps,
+            'target_duration': self.target_duration,
+            'target_distance': self.target_distance
+        }
+
 
 class WorkoutSession(db.Model):
     __tablename__ = 'workout_sessions'
 
     id = db.Column(db.Integer, primary_key=True)
-    workout_plan_id = db.Column(db.Integer, db.ForeignKey('workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    workout_plan_id = db.Column(db.Integer, db.ForeignKey(
+        'workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False, index=True)
     date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     duration = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.Text)
 
-    user = db.relationship('User', backref=db.backref('sessions', cascade='all, delete-orphan'))
-    workout_plan = db.relationship('WorkoutPlan', backref=db.backref('sessions', cascade='all, delete-orphan'))
+    user = db.relationship('User', backref=db.backref(
+        'sessions', cascade='all, delete-orphan'))
+    workout_plan = db.relationship('WorkoutPlan', backref=db.backref(
+        'sessions', cascade='all, delete-orphan'))
+
 
 class WorkoutSessionExercise(db.Model):
     __tablename__ = 'workout_session_exercises'
 
     id = db.Column(db.Integer, primary_key=True)
-    workout_session_id = db.Column(db.Integer, db.ForeignKey('workout_sessions.id', ondelete='CASCADE'), nullable=False, index=True)
-    selected_exercise_id = db.Column(db.Integer, db.ForeignKey('selected_exercises.id', ondelete='CASCADE'), nullable=False, index=True)
+    workout_session_id = db.Column(db.Integer, db.ForeignKey(
+        'workout_sessions.id', ondelete='CASCADE'), nullable=False, index=True)
+    selected_exercise_id = db.Column(db.Integer, db.ForeignKey(
+        'selected_exercises.id', ondelete='CASCADE'), nullable=False, index=True)
     sets = db.Column(db.Integer)
     reps = db.Column(db.Integer)
     duration = db.Column(db.String(50))
     distance = db.Column(db.String(50))
 
-    selected_exercise = db.relationship('SelectedExercise', backref=db.backref('session_exercises', cascade='all, delete-orphan'))
+    selected_exercise = db.relationship('SelectedExercise', backref=db.backref(
+        'session_exercises', cascade='all, delete-orphan'))
