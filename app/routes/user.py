@@ -23,12 +23,6 @@ login_model = user_ns.model('Login', {
 })
 
 
-def get_current_user():
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    if not user:
-        return None, 404
-    return user, 200
 
 
 @user_ns.route('/register')

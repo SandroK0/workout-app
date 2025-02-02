@@ -1,8 +1,8 @@
+from flask import jsonify
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import get_jwt_identity
 from datetime import datetime
-
-
 
 
 class User(db.Model):
@@ -15,6 +15,14 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    @staticmethod
+    def get_current_user():
+        current_user_id = get_jwt_identity()
+        user = User.query.get(int(current_user_id))
+        if not user:
+            return None, jsonify({"message": "User not found"}), 404
+        return user, None
 
 
 class TokenBlacklist(db.Model):
@@ -91,7 +99,7 @@ class FitnessGoalsFinal(db.Model):
             'user_id': self.user_id,
             'current_weight': self.current_weight,
             'weight_goal': self.weight_goal,
-            'exercise_goals': [exercise_goal.serialize() for exercise_goal in self.exercise_goals]
+            'exercise_goals': [exercise_goal.to_dict() for exercise_goal in self.exercise_goals]
         }
 
 

@@ -1,7 +1,7 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required
 from app import db
-from app.models import Exercises
+from app.models import Exercises, User
 from flask import request
 import logging
 
@@ -24,7 +24,9 @@ class GetExercises(Resource):
     @exercises_ns.doc(security='BearerAuth') 
     @jwt_required()
     def get(self):
-
+        user, error = User.get_current_user()
+        if error:
+            return error
         exercises = Exercises.query.all()
         return {'exercises': [exercise.to_dict() for exercise in exercises]}
 

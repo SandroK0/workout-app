@@ -52,7 +52,11 @@ def create_app():
 
     from .routes.user import user_ns
     from .routes.exercises import exercises_ns
+    from .routes.workout_plans import workout_plans_ns
+    from .routes.fitness_goals import fitness_goals_ns
     api.add_namespace(user_ns, path='/api/user')
     api.add_namespace(exercises_ns, path='/api/exercises')
+    api.add_namespace(workout_plans_ns, path='/api/workout-plans')
+    api.add_namespace(fitness_goals_ns, path='/api/fitness-goals')
 
     return app
