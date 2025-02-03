@@ -31,7 +31,7 @@ selected_exercise_response = workout_plans_ns.model('SelectedExerciseResponse', 
 
 # Model for selected exercises
 selected_exercise_model = workout_plans_ns.model('SelectedExercise', {
-    'exersize-id': fields.Integer(required=True),
+    'exercise-id': fields.Integer(required=True),
     'sets': fields.Integer,
     'reps': fields.Integer,
     'duration': fields.String,

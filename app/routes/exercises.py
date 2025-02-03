@@ -15,7 +15,7 @@ exercise_model = exercises_ns.model('Exercise', {
 
 
 @exercises_ns.route("")
-class GetExercises(Resource):
+class ExercisesList(Resource):
     @exercises_ns.response(200, 'Success', [exercise_model])
     @exercises_ns.response(401, 'Unauthorized')
     @exercises_ns.doc(security='BearerAuth')
@@ -26,7 +26,7 @@ class GetExercises(Resource):
 
 
 @exercises_ns.route("/<int:exercise_id>")
-class GetExercise(Resource):
+class Exercise(Resource):
     @exercises_ns.response(200, 'Success', exercise_model)
     @exercises_ns.response(401, 'Unauthorized')
     @exercises_ns.response(404, 'Exercise Not Found')
