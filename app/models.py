@@ -85,14 +85,22 @@ class ExerciseGoal(db.Model):
     __tablename__ = 'exercise_goals'
 
     id = db.Column(db.Integer, primary_key=True)
+    exercise_id = db.Column(db.Integer, db.ForeignKey(
+        'exercises.id', ondelete='CASCADE'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False, index=True)
     target_sets = db.Column(db.Integer, nullable=False)
     target_reps = db.Column(db.Integer, nullable=False)
     target_duration = db.Column(db.String(50))
     target_distance = db.Column(db.String(50))
 
+    exercises = db.relationship('Exercises', backref=db.backref(
+        'exercise_goals', cascade='all, delete-orphan'))
+
     def to_dict(self):
         return {
             'id': self.id,
+            'exercise': self.exercises.to_dict(),
             'target_sets': self.target_sets,
             'target_reps': self.target_reps,
             'target_duration': self.target_duration,
