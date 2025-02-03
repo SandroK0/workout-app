@@ -187,18 +187,12 @@ class WorkoutSession(db.Model):
         'sessions', cascade='all, delete-orphan'))
 
 
-class WorkoutSessionExercise(db.Model):
-    __tablename__ = 'workout_session_exercises'
-
-    id = db.Column(db.Integer, primary_key=True)
-    workout_session_id = db.Column(db.Integer, db.ForeignKey(
-        'workout_sessions.id', ondelete='CASCADE'), nullable=False, index=True)
-    selected_exercise_id = db.Column(db.Integer, db.ForeignKey(
-        'selected_exercises.id', ondelete='CASCADE'), nullable=False, index=True)
-    sets = db.Column(db.Integer)
-    reps = db.Column(db.Integer)
-    duration = db.Column(db.String(50))
-    distance = db.Column(db.String(50))
-
-    selected_exercise = db.relationship('SelectedExercise', backref=db.backref(
-        'session_exercises', cascade='all, delete-orphan'))
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'workout_plan_id': self.workout_plan_id,
+            'user_id': self.user_id,
+            'date': self.date.isoformat(),
+            'duration': self.duration,
+            'notes': self.notes,
+        }
