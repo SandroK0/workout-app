@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app import db
 
 
-workout_ns = Namespace('workout_plans', description='Workout Plans Operations')
+workout_ns = Namespace('workout-plans', description='Workout Plans Operations')
 
 # Model for exercise goals
 exercise_goal_model = workout_ns.model('ExerciseGoal', {
@@ -167,3 +167,5 @@ class WorkoutPlanResource(Resource):
         except Exception as e:
             db.session.rollback()
             return {'message': str(e)}, 400
+
+

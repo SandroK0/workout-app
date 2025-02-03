@@ -5,9 +5,6 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_migrate import Migrate
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
-import sqlite3
 import os
 
 db = SQLAlchemy()
@@ -62,6 +59,6 @@ def create_app():
     from .routes.workout_plans import workout_ns
     api.add_namespace(user_ns, path='/api/user')
     api.add_namespace(exercises_ns, path='/api/exercises')
-    api.add_namespace(workout_ns, path='/api/workout_plans')
+    api.add_namespace(workout_ns, path='/api/workout-plans')
 
     return app
