@@ -81,6 +81,25 @@ class Exercises(db.Model):
         }
 
 
+class ExerciseGoal(db.Model):
+    __tablename__ = 'exercise_goals'
+
+    id = db.Column(db.Integer, primary_key=True)
+    target_sets = db.Column(db.Integer, nullable=False)
+    target_reps = db.Column(db.Integer, nullable=False)
+    target_duration = db.Column(db.String(50))
+    target_distance = db.Column(db.String(50))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'target_sets': self.target_sets,
+            'target_reps': self.target_reps,
+            'target_duration': self.target_duration,
+            'target_distance': self.target_distance
+        }
+
+
 class WorkoutPlan(db.Model):
     __tablename__ = 'workout_plans'
 
@@ -95,8 +114,6 @@ class WorkoutPlan(db.Model):
         'workout_plans', cascade='all, delete-orphan'))
     selected_exercises = db.relationship(
         'SelectedExercise', backref='workout_plan', cascade='all, delete-orphan')
-    workout_goal = db.relationship(
-        'WorkoutGoal', backref='workout_plan', cascade='all, delete-orphan', uselist=False)
 
     def to_summary(self):
         return {
@@ -114,7 +131,6 @@ class WorkoutPlan(db.Model):
             'frequency': self.frequency,
             'session_duration': self.session_duration,
             'selected_exercises': [se.to_dict() for se in self.selected_exercises],
-            'workout_goal': self.workout_goal.to_dict() if self.workout_goal else None
         }
 
 
@@ -137,52 +153,11 @@ class SelectedExercise(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
-            'exercise_id': self.exercise_id,
-            'exercise_name': self.exercise.name if self.exercise else None,
+            'exercise': self.exercise.to_dict(),
             'sets': self.sets,
             'reps': self.reps,
             'duration': self.duration,
             'distance': self.distance,
-            'goals': [g.to_dict() for g in self.goals]
-        }
-
-
-class WorkoutGoal(db.Model):
-    __tablename__ = 'workout_goals'
-
-    id = db.Column(db.Integer, primary_key=True)
-    workout_plan_id = db.Column(db.Integer, db.ForeignKey(
-        'workout_plans.id', ondelete='CASCADE'), nullable=False, index=True)
-    target_weight = db.Column(db.Float, nullable=False)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'target_weight': self.target_weight
-        }
-
-
-class ExerciseGoal(db.Model):
-    __tablename__ = 'exercise_goals'
-
-    id = db.Column(db.Integer, primary_key=True)
-    selected_exercise_id = db.Column(db.Integer, db.ForeignKey(
-        'selected_exercises.id', ondelete='CASCADE'), nullable=False, index=True)
-    target_sets = db.Column(db.Integer, nullable=False)
-    target_reps = db.Column(db.Integer, nullable=False)
-    target_duration = db.Column(db.String(50))
-    target_distance = db.Column(db.String(50))
-
-    selected_exercise = db.relationship(
-        'SelectedExercise', backref=db.backref('goals', cascade='all, delete-orphan'))
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'target_sets': self.target_sets,
-            'target_reps': self.target_reps,
-            'target_duration': self.target_duration,
-            'target_distance': self.target_distance
         }
 
 

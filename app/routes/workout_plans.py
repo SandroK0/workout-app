@@ -1,98 +1,81 @@
 from flask import jsonify
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models import WorkoutPlan, SelectedExercise, WorkoutGoal, ExerciseGoal, User, Exercises
-from sqlalchemy.exc import SQLAlchemyError
+from app.models import WorkoutPlan, SelectedExercise, User, Exercises
 from app import db
 
 
-workout_ns = Namespace('workout-plans', description='Workout Plans Operations')
+workout_plans_ns = Namespace(
+    'workout-plans', description='Workout Plans Operations')
 
-# Model for exercise goals
-exercise_goal_model = workout_ns.model('ExerciseGoal', {
-    'target_sets': fields.Integer(required=True),
-    'target_reps': fields.Integer(required=True),
-    'target_duration': fields.String,
-    'target_distance': fields.String
+
+exercise_model_response = workout_plans_ns.model('Exercise', {
+    'id': fields.Integer,
+    'name': fields.String,
+    'description': fields.String,
+    'instructions': fields.String,
+    'target_muscles': fields.String,
+    'difficulty': fields.Integer,
 })
 
+
 # Model for selected exercises
-selected_exercise_model = workout_ns.model('SelectedExercise', {
-    'exercise_id': fields.Integer(required=True),
+selected_exercise_response = workout_plans_ns.model('SelectedExerciseResponse', {
+    'id': fields.Integer(required=True),
+    'exercise': fields.Nested(exercise_model_response),
     'sets': fields.Integer,
     'reps': fields.Integer,
     'duration': fields.String,
     'distance': fields.String,
-    'goals': fields.List(fields.Nested(exercise_goal_model))
 })
 
-# Model for workout goal
-workout_goal_model = workout_ns.model('WorkoutGoal', {
-    'target_weight': fields.Float(required=True)
+# Model for selected exercises
+selected_exercise_model = workout_plans_ns.model('SelectedExercise', {
+    'exersize-id': fields.Integer(required=True),
+    'sets': fields.Integer,
+    'reps': fields.Integer,
+    'duration': fields.String,
+    'distance': fields.String,
 })
 
 # Main workout plan model
-workout_plan_model = workout_ns.model('WorkoutPlan', {
+workout_plan_model = workout_plans_ns.model('WorkoutPlan', {
     'name': fields.String(required=True),
     'frequency': fields.String,
     'session_duration': fields.Integer,
     'selected_exercises': fields.List(fields.Nested(selected_exercise_model), required=True),
-    'workout_goal': fields.Nested(workout_goal_model, required=True)
 })
 
+
 # Response model
-workout_plan_response = workout_ns.model('WorkoutPlanResponse', {
+workout_plan_response = workout_plans_ns.model('WorkoutPlanResponse', {
     'id': fields.Integer,
     'user_id': fields.Integer,
     'name': fields.String,
     'frequency': fields.String,
     'session_duration': fields.Integer,
-    'created_at': fields.DateTime,
-    'selected_exercises': fields.List(fields.Nested(selected_exercise_model)),
-    'workout_goal': fields.Nested(workout_goal_model)
+    'selected_exercises': fields.List(fields.Nested(selected_exercise_response)),
 })
 
 
-'''
-    Example request body for creating workout plan.
-
-    {
-    "name": "Beginner Full Body Routine",
-    "frequency": "3 times/week",
-    "session_duration": 60,
-    "selected_exercises": [
-        {
-        "exercise_id": 1,
-        "sets": 3,
-        "reps": 12,
-        "goals": [
-            {
-            "target_sets": 4,
-            "target_reps": 15
-            }
-        ]
-        }
-    ],
-    "workout_goal": {
-        "target_weight": 75.5
-    }
-    }
-'''
-
-
-workout_plan_summary = workout_ns.model('WorkoutPlanSummary', {
+workout_plan_summary_response = workout_plans_ns.model('WorkoutPlanSummaryResponse', {
     'id': fields.Integer,
     'name': fields.String,
     'frequency': fields.String,
     'session_duration': fields.Integer,
-    'created_at': fields.DateTime
 })
 
 
-@workout_ns.route('/summary')
+workout_plan_summary = workout_plans_ns.model('WorkoutPlanSummary', {
+    'name': fields.String,
+    'frequency': fields.String,
+    'session_duration': fields.Integer,
+})
+
+
+@workout_plans_ns.route('/summary')
 class WorkoutPlanSummaryList(Resource):
-    @workout_ns.marshal_list_with(workout_plan_summary)
-    @workout_ns.doc(security='BearerAuth')
+    @workout_plans_ns.response(200, 'Workout plan created successfully', workout_plan_summary_response)
     @jwt_required()
     def get(self):
         """Get all workout plan summaries for current user"""
@@ -104,24 +87,24 @@ class WorkoutPlanSummaryList(Resource):
         return [plan.to_summary() for plan in plans]
 
 
-@workout_ns.route('')
+@workout_plans_ns.route('')
 class WorkoutPlanResource(Resource):
-    @workout_ns.expect(workout_plan_model)
-    @workout_ns.response(201, 'Workout plan created successfully', workout_plan_response)
-    @workout_ns.response(400, 'Validation error')
-    @workout_ns.response(404, 'User not found')
-    @workout_ns.response(500, 'Server error')
+    @workout_plans_ns.expect(workout_plan_model)
+    @workout_plans_ns.response(201, 'Workout plan created successfully', workout_plan_response)
+    @workout_plans_ns.response(400, 'Validation error')
+    @workout_plans_ns.response(404, 'User not found')
+    @workout_plans_ns.response(500, 'Server error')
     @jwt_required()
     def post(self):
-        """Create a new workout plan with exercises and goals"""
+        """Create a new workout plan with exercises"""
         user = User.get_current_user()
         if not user:
             return {"message": "User not found"}, 404
 
-        data = workout_ns.payload
+        data = workout_plans_ns.payload
 
         # Validate required fields
-        required_fields = ['name', 'selected_exercises', 'workout_goal']
+        required_fields = ['name', 'selected_exercises']
         if not all(field in data for field in required_fields):
             return {'message': 'Missing required fields'}, 400
 
@@ -154,18 +137,109 @@ class WorkoutPlanResource(Resource):
                 )
                 db.session.add(selected_exercise)
 
-            # Add workout goal
-            workout_goal = WorkoutGoal(
-                workout_plan_id=workout_plan.id,
-                target_weight=float(data['workout_goal']['target_weight'])
-            )
-            db.session.add(workout_goal)
-
             db.session.commit()
-            return workout_plan.to_dict(), 201
+            return {'message': 'Workout plan created successfully', 'workout_plan': workout_plan.to_dict()}, 201
 
         except Exception as e:
             db.session.rollback()
             return {'message': str(e)}, 400
 
 
+@workout_plans_ns.route('/<int:plan_id>')
+@workout_plans_ns.doc(params={"plan_id": "The ID of the workout plan"})
+class SingleWorkoutPlanResource(Resource):
+    """
+    Resource for managing a single workout plan.
+    Allows retrieving and deleting a workout plan owned by the authenticated user.
+    """
+
+    @workout_plans_ns.response(200, "Success", workout_plan_response)
+    @workout_plans_ns.response(404, "Workout plan not found")
+    @jwt_required()
+    def get(self, plan_id):
+        """
+        Get a specific workout plan by its ID.
+
+        Retrieves a workout plan that belongs to the authenticated user.
+
+        **Returns:**
+        - 200: A JSON object representing the workout plan.
+        - 404: If the workout plan does not exist or does not belong to the user.
+        """
+        plan = self._get_user_plan(plan_id)
+
+        return plan.to_dict()
+
+    @workout_plans_ns.response(204, "Workout plan deleted successfully")
+    @workout_plans_ns.response(400, "Error deleting workout plan")
+    @workout_plans_ns.response(404, "Workout plan not found")
+    @jwt_required()
+    def delete(self, plan_id):
+        """
+        Delete a workout plan.
+
+        Deletes a workout plan that belongs to the authenticated user.
+
+        **Returns:**
+        - 204: If the workout plan is deleted successfully.
+        - 400: If there is an error during deletion.
+        - 404: If the workout plan does not exist or does not belong to the user.
+        """
+        plan = self._get_user_plan(plan_id)
+
+        try:
+            db.session.delete(plan)
+            db.session.commit()
+            return "", 204
+        except Exception as e:
+            db.session.rollback()
+            return {'message': str(e)}, 400
+
+    @workout_plans_ns.expect(workout_plan_summary)
+    @workout_plans_ns.response(200, "Workout plan updated successfully", workout_plan_summary_response)
+    @workout_plans_ns.response(400, "Validation error")
+    @workout_plans_ns.response(404, "Workout plan not found")
+    @jwt_required()
+    def put(self, plan_id):
+        """
+        Update an existing workout plan.
+
+        Updates a workout plan that belongs to the authenticated user.
+
+        **Returns:**
+        - 200: The updated workout plan.
+        - 400: If there is a validation error.
+        - 404: If the workout plan does not exist or does not belong to the user.
+        """
+        plan = self._get_user_plan(plan_id)
+        data = workout_plans_ns.payload
+
+        try:
+            plan.name = data.get('name', plan.name)
+            plan.frequency = data.get('frequency', plan.frequency)
+            plan.session_duration = data.get(
+                'session_duration', plan.session_duration)
+
+            db.session.commit()
+            return {'message': 'Workout plan updated successfully', 'workout_plan': plan.to_dict()}, 200
+
+        except Exception as e:
+            db.session.rollback()
+            return {'message': str(e)}, 400
+
+    def _get_user_plan(self, plan_id):
+        """
+        Helper function to fetch a workout plan and verify ownership.
+
+        **Returns:**
+        - The workout plan object if found.
+        - Aborts with 404 if the plan does not exist or does not belong to the user.
+        """
+        user = User.get_current_user()
+        if not user:
+            workout_plans_ns.abort(404, "User not found")
+
+        plan = WorkoutPlan.query.filter_by(id=plan_id, user_id=user.id).first()
+        if not plan:
+            workout_plans_ns.abort(404, "Workout plan not found")
+        return plan
