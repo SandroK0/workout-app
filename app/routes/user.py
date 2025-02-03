@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from datetime import timedelta
 from app import db
-from app.models import User, UserProfile
+from app.models import User, UserProfile, FitnessGoal
 
 user_ns = Namespace('user', description='User')
 
@@ -47,6 +47,7 @@ class Register(Resource):
         user = User(username=username)
         user.set_password(password)
         user.profile = UserProfile()  # Create empty profile associated with the user
+        user.fitness_goal = FitnessGoal()
         db.session.add(user)
         db.session.commit()
 
@@ -86,7 +87,7 @@ class Login(Resource):
         }, 200
 
 
-profile_update_model = user_ns.model('ProfileUpdate', {
+profile_model = user_ns.model('ProfileUpdate', {
     'current_weight': fields.Float(description='Current weight in kg', required=False),
     'target_weight': fields.Float(description='Target weight in kg', required=False),
     'height': fields.Float(description='Height in cm', required=False),
@@ -100,7 +101,7 @@ profile_update_model = user_ns.model('ProfileUpdate', {
 class UserProfileResource(Resource):
 
     @jwt_required()
-    @user_ns.response(200, 'Profile retrieved successfully', profile_update_model)
+    @user_ns.response(200, 'Profile retrieved successfully', profile_model)
     @user_ns.response(401, 'Unauthorized')
     @user_ns.response(404, 'Profile not found')
     def get(self):
@@ -116,7 +117,7 @@ class UserProfileResource(Resource):
         }, 200
 
     @jwt_required()
-    @user_ns.expect(profile_update_model)
+    @user_ns.expect(profile_model)
     @user_ns.response(200, "Profile updated successfully")
     @user_ns.response(400, "Invalid input data")
     @user_ns.response(401, "Unauthorized")
@@ -128,7 +129,7 @@ class UserProfileResource(Resource):
         if not current_user or not current_user.profile:
             return {"error": "Profile not found"}, 404
 
-        data = request.get_json()
+        data = user_ns.payload 
         profile = UserProfile.query.filter_by(user_id=current_user.id).first()
 
         fields_to_update = [

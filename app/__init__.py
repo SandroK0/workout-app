@@ -60,12 +60,14 @@ def create_app():
     from .routes.workout_plans_exercises import workout_plans_exercise_ns
     from .routes.exercise_goals import exercises_goals_ns
     from .routes.workout_session import workout_sessions_ns
+    from .routes.fitness_goals import fitness_goals_ns
     api.add_namespace(user_ns, path='/api/user')
     api.add_namespace(exercises_ns, path='/api/exercises')
     api.add_namespace(workout_plans_ns, path='/api/workout-plans')
     api.add_namespace(workout_plans_exercise_ns, path='/api/workout-plans')
     api.add_namespace(exercises_goals_ns, path='/api/exercise-goals')
     api.add_namespace(workout_sessions_ns, path='/api/workout-sessions')
+    api.add_namespace(fitness_goals_ns, path='/api/fitness-goals')
 
 
     return app

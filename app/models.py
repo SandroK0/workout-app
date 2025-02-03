@@ -33,15 +33,10 @@ class UserProfile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'), nullable=False, index=True)
     current_weight = db.Column(db.Float)
-    target_weight = db.Column(db.Float)
     height = db.Column(db.Float)
     age = db.Column(db.Integer)
     body_fat_percentage = db.Column(db.Float)
     muscle_mass = db.Column(db.Float)
-    created_at = db.Column(
-        db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref(
         'profile', uselist=False, cascade='all, delete-orphan'))
@@ -57,6 +52,29 @@ class UserProfile(db.Model):
             'muscle_mass': self.muscle_mass,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
+        }
+
+
+class FitnessGoal(db.Model):
+    __tablename__ = 'fitness_goals'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE'), nullable=False, index=True)
+    target_weight = db.Column(db.Float)
+    target_muscle_mass = db.Column(db.Float)
+    target_body_fat_percentage = db.Column(db.Float)
+
+    user = db.relationship('User', backref=db.backref(
+        'fitness_goal', uselist=False, cascade='all, delete-orphan'))
+
+
+    def to_dict(self):
+        return {
+            'user_id': self.user_id,
+            'target_weight': self.target_weight,
+            'target_muscle_mass': self.target_muscle_mass,
+            'target_body_fat_percentage': self.target_body_fat_percentage,
         }
 
 
