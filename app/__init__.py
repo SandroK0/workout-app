@@ -26,7 +26,8 @@ api = Api(
     title='Workout App API',
     description='API for the Workout App',
     authorizations=authorizations,
-    security='BearerAuth'  # Apply globally
+    security='BearerAuth',  # Apply globally
+    doc='/api/docs/'
 )
 
 def create_app():

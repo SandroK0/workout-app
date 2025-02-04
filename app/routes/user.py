@@ -89,7 +89,6 @@ class Login(Resource):
 
 profile_model = user_ns.model('ProfileUpdate', {
     'current_weight': fields.Float(description='Current weight in kg', required=False),
-    'target_weight': fields.Float(description='Target weight in kg', required=False),
     'height': fields.Float(description='Height in cm', required=False),
     'age': fields.Integer(description='Age in years', required=False),
     'body_fat_percentage': fields.Float(description='Body fat percentage', required=False),
