@@ -165,13 +165,12 @@ curl -X PUT https://api.example.com/api/user/profile \
 - **Description:** Retrieve a list of all exercises
 - **Responses:**
   - 200: Success (returns array of exercises)
-  - 401: Unauthorized
+  - 404: Exercises Not Found
 
 **Example:**
 
 ```bash
 curl -X GET https://api.example.com/api/exercises \
-     -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Get Single Exercise
@@ -181,14 +180,12 @@ curl -X GET https://api.example.com/api/exercises \
 - **Description:** Retrieve details of a specific exercise
 - **Responses:**
   - 200: Success (returns exercise details)
-  - 401: Unauthorized
   - 404: Exercise Not Found
 
 **Example:**
 
 ```bash
-curl -X GET https://api.example.com/api/exercises/1 \
-     -H "Authorization: Bearer YOUR_TOKEN"
+curl -X GET https://api.example.com/api/exercises/1
 ```
 
 ## Workout Plans Endpoints

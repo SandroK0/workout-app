@@ -17,24 +17,23 @@ exercise_model = exercises_ns.model('Exercise', {
 @exercises_ns.route("")
 class ExercisesList(Resource):
     @exercises_ns.response(200, 'Success', [exercise_model])
-    @exercises_ns.response(401, 'Unauthorized')
-    @exercises_ns.doc(security='BearerAuth')
-    @jwt_required()
+    @exercises_ns.response(404, 'Exercises Not Found')
     def get(self):
         exercises = Exercises.query.all()
-        return {'exercises': [exercise.to_dict() for exercise in exercises]}
+
+        if not exercises:
+            return {'message': 'Exercises not found'}, 404
+
+        return {'exercises': [exercise.to_dict() for exercise in exercises]}, 200
 
 
 @exercises_ns.route("/<int:exercise_id>")
 class Exercise(Resource):
     @exercises_ns.response(200, 'Success', exercise_model)
-    @exercises_ns.response(401, 'Unauthorized')
     @exercises_ns.response(404, 'Exercise Not Found')
-    @exercises_ns.doc(security='BearerAuth')
-    @jwt_required()
     def get(self, exercise_id):
-        exercise = Exercises.query.filter_by(exercise_id=exercise_id).first()
+        exercise = Exercises.query.filter_by(id=exercise_id).first()
         if exercise:
-            return {'exercise': exercise.to_dict()}
+            return {'exercise': exercise.to_dict()}, 200
         else:
             return {'message': 'Exercise not found'}, 404
