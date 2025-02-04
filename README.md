@@ -68,15 +68,11 @@ The API provides a Swagger UI interface for interactive documentation at the roo
 - [Workout Sessions](#workout-sessions-endpoints)
 - [Fitness Goals](#fitness-goals-endpoints)
 
-## Authentication
-
-All authenticated requests require a Bearer token in the `Authorization` header:
-
 # Workout App API Documentation
 
 ## Authentication
 
-The API uses Bearer Authentication. All endpoints require an Authorization header with a valid token.
+All authenticated requests require a Bearer token in the `Authorization` header:
 
 ## User Endpoints
 
