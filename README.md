@@ -2,7 +2,14 @@
 
 ## Overview
 
-This API provides functionalities for users to manage exercises, fitness goals, and workout plans. The API uses JWT-based authentication.
+This API provides functionalities for users to manage exercises, fitness goals, and workout plans. 
+
+## Technology Used
+
+- Python (Flask)
+
+- SQLite
+
 
 # Table of Contents
 
