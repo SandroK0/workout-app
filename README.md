@@ -59,6 +59,10 @@ The API provides a Swagger UI interface for interactive documentation at the roo
 - **Swagger UI:** `http://your-api-domain.com/api/docs`
 - This interface provides interactive documentation where you can test endpoints directly from your browser
 
+## Authentication
+
+All authenticated requests require a Bearer token in the `Authorization` header:
+
 ## Endpoints
 
 - [User](#user-endpoints)
@@ -67,12 +71,6 @@ The API provides a Swagger UI interface for interactive documentation at the roo
 - [Exercise Goals](#exercise-goals-endpoints)
 - [Workout Sessions](#workout-sessions-endpoints)
 - [Fitness Goals](#fitness-goals-endpoints)
-
-# Workout App API Documentation
-
-## Authentication
-
-All authenticated requests require a Bearer token in the `Authorization` header:
 
 ## User Endpoints
 
