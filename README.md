@@ -8,6 +8,8 @@ This API provides functionalities for users to manage exercises, fitness goals, 
 
 - [Installation](#docker)
 - [API Documentation](#api-documentation)
+- [Database Schema](#database-schema)
+
 
 ## Docker
 
@@ -595,6 +597,68 @@ curl -X PUT https://api.example.com/api/fitness-goals \
          "target_body_fat_percentage": 12.0,
          "target_muscle_mass": 40.0
      }'
+```
+
+## Database Schema
+
+```
+                                  +---------------------+
+                                  |     users           |
+                                  +---------------------+
+                                  | id (PK)             |
+                                  | username (UQ)       |
+                                  | password            |
+                                  +---------------------+
+                                          │
+                  ┌───────────────────────┴───────────────────────┐
+                  │                                               │
+          +---------------------+                        +---------------------+
+          |  user_profiles      |                        |  fitness_goals      |
+          +---------------------+                        +---------------------+
+          | id (PK)             |                        | id (PK)             |
+          | user_id (FK)        |                        | user_id (FK)        |
+          | current_weight      |                        | target_weight       |
+          | height              |                        | target_muscle_mass  |
+          | age                 |                        | target_body_fat     |
+          | body_fat_percentage |                        +---------------------+
+          | muscle_mass         |
+          +---------------------+
+
+          +---------------------+                        +---------------------+                   
+          | workout_plans       |                        |     exercises       |
+          +---------------------+                        +---------------------+
+          | id (PK)             |                        | id (PK)             |
+          | user_id (FK)        |                        | name (UQ)           |
+          | name                |                        | description         |
+          | frequency           |                        | instructions        |
+          | session_duration    |                        | target_muscles      |
+          +---------------------+                        | difficulty          |
+                  │                                      +---------------------+
+          +---------------------+                                  |
+          | selected_exercises  |                                  |
+          +---------------------+                        +---------------------+
+          | id (PK)             |                        |  exercise_goals     |
+          | workout_plan_id FK  |                        +---------------------+
+          | exercise_id (FK)    |                        | id (PK)             |
+          | sets                |                        | exercise_id (FK)    |
+          | reps                |                        | user_id (FK)        |
+          | duration            |                        | target_sets         |
+          | distance            |                        | target_reps         |
+          +---------------------+                        | target_duration     |
+                                                         | target_distance     |
+                                                         +---------------------+
+          +---------------------+
+          | workout_sessions    |
+          +---------------------+
+          | id (PK)             |
+          | workout_plan_id FK  |
+          | user_id (FK)        |
+          | date                |
+          | duration            |
+          | notes               |
+          +---------------------+
+    
+
 ```
 
 ## Responses
