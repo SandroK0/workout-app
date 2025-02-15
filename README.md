@@ -59,8 +59,6 @@ docker compose down
 
 # API Documentation
 
-The API provides a Swagger UI interface for interactive documentation at the root route:
-
 ## Swagger
 
 - **Swagger UI:** `http://your-api-domain.com/api/docs`
