@@ -7,7 +7,6 @@ This API provides functionalities for users to manage exercises, fitness goals, 
 ## Technology Used
 
 - Python (Flask)
-
 - SQLite
 
 
